@@ -5,6 +5,16 @@ const bodyParser = require('body-parser')
 
 const app = express()
 
+const path = require('path')
+const hbs = require('express-handlebars');
+app.set('views', path.join(__dirname, 'views'));
+app.engine('hbs', hbs.engine({
+    extname: 'hbs',
+    defaultLayout: 'main',
+    layoutsDir: __dirname + '/views/layouts/',
+}));
+
+
 app.use(bodyParser.urlencoded({extended: true}))
 
 const con = mysql.createConnection({
