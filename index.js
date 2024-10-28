@@ -30,7 +30,6 @@ con.connect((err) => {
     console.log('Connected to joga_mysql db')
 })
 
-// show all articles - index page
 app.get('/', (req, res) => {
     let query = "SELECT * FROM article";
     let articles = [];
@@ -43,7 +42,6 @@ app.get('/', (req, res) => {
     });
 });
 
-// Show article by this slug
 app.get('/article/:slug', (req, res) => {
     let query = `
         SELECT article.*, author.name AS author_name 
@@ -59,6 +57,27 @@ app.get('/article/:slug', (req, res) => {
     });
 });
 
+app.get('/author/:author_id', (req, res) => {
+    let authorId = req.params.author_id;
+
+    let authorQuery = "SELECT name FROM author WHERE id = ?";
+    let articlesQuery = "SELECT * FROM article WHERE author_id = ?";
+
+    con.query(authorQuery, [authorId], (err, authorResult) => {
+        if (err) throw err;
+
+        let authorName = authorResult[0].name;
+
+        con.query(articlesQuery, [authorId], (err, articlesResult) => {
+            if (err) throw err;
+
+            res.render('author', {
+                author_name: authorName,
+                articles: articlesResult
+            });
+        });
+    });
+});
 
 
 app.listen(3003, () => {
